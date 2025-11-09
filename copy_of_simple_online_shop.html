@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Shop Deluxe</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: #f4f7fb;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    header {
+      background: linear-gradient(135deg, #2196f3, #0d47a1);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .badge {
+      background: rgba(255,255,255,0.15);
+      padding: 0.15rem 0.45rem;
+      border-radius: 999px;
+      margin-left: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 1rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    nav a:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .hero {
+      background: url('https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=1500&q=80') center/cover;
+      height: 350px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      text-align: center;
+      text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+    }
+
+    .filter-bar {
+      background: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 80px;
+      z-index: 90;
+    }
+
+    .filter-bar input {
+      padding: 0.6rem;
+      width: 250px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    .product-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .product {
+      background: white;
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.3s;
+      position: relative;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .product img {
+      width: 100%;
+      border-radius: 8px;
+      height: 160px;
+      object-fit: cover;
+    }
+
+    .wishlist-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: white;
+      border: none;
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #ff7043;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: background 0.3s;
+    }
+
+    .cart-page, .wishlist-page {
+      max-width: 900px;
+      margin: 2rem auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    .cart-row, .wish-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .qty-controls button {
+      padding: 0.25rem 0.5rem;
+      margin-left: 0.4rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #777;
+      font-size: 0.9rem;
+      background: #fff;
+      margin-top: 2rem;
+    }
+
+    .dark-mode {
+      background: #121212;
+      color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <img src="https://cdn-icons-png.flaticon.com/512/891/891462.png" alt="shop" width="40" height="40">
+      <div>
+        <div style="font-weight:700">Simple Shop Deluxe</div>
+        <div style="font-size:0.8rem;opacity:0.9">Curated picks for you</div>
+      </div>
+    </div>
+    <nav>
+      <a href="#" id="homeLink">🏠 Home</a>
+      <a href="#cartPage" id="viewCart">🛒 Cart <span id="cartBadge" class="badge">0</span></a>
+      <a href="#wishlistPage" id="viewWishlist">❤️ Wishlist <span id="wishBadge" class="badge">0</span></a>
+      <a href="#" id="toggleDark">🌙 Dark Mode</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>Discover Premium Products</h2>
+    <p>Shop smarter. Shop with style.</p>
+    <button id="shopNow">Start Shopping</button>
+  </section>
+
+  <div class="filter-bar">
+    <input type="text" id="searchInput" placeholder="Search products...">
+  </div>
+
+  <main class="product-container" id="shopPage"></main>
+
+  <section id="cartPage" class="cart-page">
+    <h2>Your Cart</h2>
+    <div id="cartItems"></div>
+    <h3 id="cartTotal">Total: ₱0.00</h3>
+    <button id="checkout">Checkout</button>
+    <button id="clearCart">Clear Cart</button>
+  </section>
+
+  <section id="wishlistPage" class="wishlist-page">
+    <h2>Your Wishlist</h2>
+    <div id="wishlistItems"></div>
+  </section>
+
+  <footer>
+    <p>© 2025 Simple Shop Deluxe | Designed by Marlon Carbonilla</p>
+  </footer>
+
+  <script>
+    // --- Product data (100 sample products generated) ---
+    const products = [];
+    const categories = ['Clothing','Electronics','Home','Beauty','Sports','Outdoors','Kids','Accessories'];
+    for(let i=1;i<=100;i++){
+      const cat = categories[i % categories.length];
+      products.push({
+        id: i,
+        name: `${cat} Product ${i}`,
+        price: Math.floor((Math.random()*9000)+199),
+        img: `https://picsum.photos/seed/product${i}/400/300`
+      });
+    }
+
+    // --- DOM refs ---
+    const shopPage = document.getElementById('shopPage');
+    const cartPage = document.getElementById('cartPage');
+    const wishlistPage = document.getElementById('wishlistPage');
+    const cartBadge = document.getElementById('cartBadge');
+    const wishBadge = document.getElementById('wishBadge');
+
+    // --- State ---
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+    // --- Helpers ---
+    function saveData(){
+      localStorage.setItem('cart', JSON.stringify(cart));
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+      updateBadges();
+    }
+
+    function updateBadges(){
+      const qty = cart.reduce((s,i)=>s+i.qty,0);
+      cartBadge.textContent = qty;
+      wishBadge.textContent = wishlist.length;
+    }
+
+    function showShop(){
+      cartPage.style.display = 'none';
+      wishlistPage.style.display = 'none';
+      shopPage.style.display = 'grid';
+    }
+
+    // --- Rendering ---
+    function renderProducts(list = products){
+      shopPage.innerHTML = '';
+      list.forEach(p=>{
+        const el = document.createElement('div');
+        el.className = 'product';
+        el.innerHTML = `
+          <button class="wishlist-btn" data-id="${p.id}" aria-label="Add to wishlist">❤️</button>
+          <img src="${p.img}" alt="${p.name}">
+          <div>
+            <h3 style="margin:0.6rem 0">${p.name}</h3>
+            <p style="margin:0">₱${p.price.toLocaleString()}</p>
+          </div>
+          <div style="display:flex;justify-content:center;margin-top:0.8rem">
+            <button class="add-btn" data-id="${p.id}">Add to Cart</button>
+          </div>
+        `;
+        shopPage.appendChild(el);
+      });
+
+      // attach listeners reliably using currentTarget
+      document.querySelectorAll('.add-btn').forEach(b=>b.addEventListener('click', addToCart));
+      document.querySelectorAll('.wishlist-btn').forEach(b=>b.addEventListener('click', addToWishlist));
+    }
+
+    function renderCart(){
+      const el = document.getElementById('cartItems');
+      let total = 0;
+      el.innerHTML = '';
+      if(cart.length === 0){
+        el.innerHTML = '<p>Your cart is empty.</p>';
+        document.getElementById('cartTotal').textContent = 'Total: ₱0.00';
+        updateBadges();
+        return;
+      }
+      cart.forEach((item,i)=>{
+        total += item.price * item.qty;
+        const row = document.createElement('div');
+        row.className = 'cart-row';
+        row.innerHTML = `
+          <div style="flex:1">
+            <strong>${item.name}</strong>
+            <div style="font-size:0.9rem; color:#666">₱${item.price.toLocaleString()} each</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.6rem">
+            <div class="qty-controls">Qty: <span id="qty-${i}">${item.qty}</span>
+              <button data-i="${i}" class="qty-inc">+</button>
+              <button data-i="${i}" class="qty-dec">-</button>
+            </div>
+            <div>₱${(item.price*item.qty).toLocaleString()}</div>
+            <button onclick="removeCart(${i})">❌</button>
+          </div>
+        `;
+        el.appendChild(row);
+      });
+      document.getElementById('cartTotal').textContent = `Total: ₱${total.toLocaleString()}`;
+
+      // attach qty listeners
+      document.querySelectorAll('.qty-inc').forEach(b=>b.addEventListener('click', e=>{
+        const i = +e.currentTarget.dataset.i; updateQty(i,1);
+      }));
+      document.querySelectorAll('.qty-dec').forEach(b=>b.addEventListener('click', e=>{
+        const i = +e.currentTarget.dataset.i; updateQty(i,-1);
+      }));
+
+      updateBadges();
+    }
+
+    function renderWishlist(){
+      const el = document.getElementById('wishlistItems');
+      el.innerHTML = '';
+      if(wishlist.length === 0){
+        el.innerHTML = '<p>Your wishlist is empty.</p>';
+        updateBadges();
+        return;
+      }
+      wishlist.forEach((item,i)=>{
+        const row = document.createElement('div');
+        row.className = 'wish-row';
+        row.innerHTML = `
+          <div style="flex:1">
+            <strong>${item.name}</strong>
+            <div style="font-size:0.9rem; color:#666">₱${item.price.toLocaleString()}</div>
+          </div>
+          <div>
+            <button onclick="addFromWish(${i})">Add to Cart</button>
+            <button onclick="removeWishlist(${i})">❌</button>
+          </div>
+        `;
+        el.appendChild(row);
+      });
+      updateBadges();
+    }
+
+    // --- Actions ---
+    function addToCart(e){
+      const id = +e.currentTarget.dataset.id;
+      const product = products.find(p=>p.id===id);
+      const existing = cart.find(i=>i.id===id);
+      if(existing) existing.qty++;
+      else cart.push({...product, qty:1});
+      saveData();
+      renderCart();
+      alert(`${product.name} added to cart!`);
+    }
+
+    function addToWishlist(e){
+      const id = +e.currentTarget.dataset.id;
+      const product = products.find(p=>p.id===id);
+      if(!wishlist.find(i=>i.id===id)) wishlist.push(product);
+      saveData();
+      renderWishlist();
+      alert(`${product.name} added to wishlist!`);
+    }
+
+    function addFromWish(i){
+      const item = wishlist[i];
+      const existing = cart.find(c=>c.id===item.id);
+      if(existing) existing.qty++;
+      else cart.push({...item, qty:1});
+      // optionally remove from wishlist
+      wishlist.splice(i,1);
+      saveData();
+      renderCart();
+      renderWishlist();
+    }
+
+    function removeCart(i){
+      cart.splice(i,1);
+      saveData();
+      renderCart();
+    }
+    window.removeCart = removeCart; // expose for inline onclick
+
+    function removeWishlist(i){
+      wishlist.splice(i,1);
+      saveData();
+      renderWishlist();
+    }
+    window.removeWishlist = removeWishlist;
+
+    function updateQty(i, delta){
+      if(!cart[i]) return;
+      cart[i].qty += delta;
+      if(cart[i].qty < 1) cart[i].qty = 1;
+      saveData();
+      renderCart();
+    }
+    window.updateQty = updateQty;
+
+    document.getElementById('checkout').addEventListener('click', ()=>{
+      if(cart.length === 0){ alert('Your cart is empty.'); return; }
+      alert('Thank you for your purchase!');
+      cart.length = 0;
+      saveData();
+      renderCart();
+    });
+
+    document.getElementById('clearCart').addEventListener('click', ()=>{
+      if(confirm('Clear your cart?')){
+        cart.length = 0;
+        saveData();
+        renderCart();
+      }
+    });
+
+    document.getElementById('searchInput').addEventListener('input', e=>{
+      const q = e.target.value.toLowerCase().trim();
+      if(!q) return renderProducts(products);
+      const filtered = products.filter(p=>p.name.toLowerCase().includes(q));
+      renderProducts(filtered);
+      showShop();
+    });
+
+    document.getElementById('shopNow').addEventListener('click', ()=>{
+      window.scrollTo({top: shopPage.offsetTop, behavior:'smooth'});
+    });
+
+    document.getElementById('viewCart').addEventListener('click', e=>{
+      e.preventDefault();
+      shopPage.style.display = 'none';
+      wishlistPage.style.display = 'none';
+      cartPage.style.display = 'block';
+      renderCart();
+    });
+
+    document.getElementById('viewWishlist').addEventListener('click', e=>{
+      e.preventDefault();
+      shopPage.style.display = 'none';
+      cartPage.style.display = 'none';
+      wishlistPage.style.display = 'block';
+      renderWishlist();
+    });
+
+    document.getElementById('homeLink').addEventListener('click', e=>{
+      e.preventDefault();
+      showShop();
+    });
+
+    document.getElementById('toggleDark').addEventListener('click', e=>{
+      e.preventDefault();
+      document.body.classList.toggle('dark-mode');
+    });
+
+    // initial render
+    renderProducts();
+    renderCart();
+    renderWishlist();
+    updateBadges();
+  </script>
+</body>
+</html>
